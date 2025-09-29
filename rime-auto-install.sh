@@ -35,7 +35,7 @@ install_fcitx5(){
     grep -qF 'export XMODIFIERS="@im=fcitx5"' /etc/profile || echo 'export XMODIFIERS="@im=fcitx5"'
     grep -qF 'export GTK_IM_MODULE="fcitx5"' /etc/profile || echo 'export GTK_IM_MODULE="fcitx5"'
     grep -qF 'export QT_IM_MODULE="fcitx5"' /etc/profile || echo 'export QT_IM_MODULE="fcitx5"'
-  } | sudo tee -a /etc/profile >/dev/null
+  } | sudo tee -a /etc/profile > /dev/null
   echo -e "\n${GREEN}完成：安装 fcitx5${NC}"
 }
 
