@@ -89,6 +89,7 @@ complete(){
   echo -e "${BLUE}11. 在 '系统设置 > 键盘 > 虚拟键盘' 中开启虚拟键盘 'fcitx5'${NC}"
   echo -e "${BLUE}12. 在 '/etc/profile' 中删除 'GTK_IM_MODULE' 与 'QT_IM_MODULE' 环境变量配置${NC}"
   echo -e "${BLUE}13. 注销并重新进入桌面${NC}"
+  echo -e "\n"
 }
 
 main(){
