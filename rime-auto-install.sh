@@ -74,7 +74,7 @@ launch_fcitx5(){
 complete(){
   touch ~/.local/share/fcitx5/rime/.auto-install-complete
   echo "complete" > "$PROGRESS_FILE"
-  echo -e "\n${YELLOW}安装完成！请手动进行以下操作，以完成 Rime 输入法的启用。\n${NC}"
+  echo -e "\n${YELLOW}安装完成！请手动进行以下操作，以完成 Rime 输入法的启用\n${NC}"
   echo -e "${BLUE}01. 右键任务栏上的键盘图标${NC}"
   echo -e "${BLUE}02. 点击配置${NC}"
   echo -e "${BLUE}03. 叉掉所有输入法${NC}"
@@ -85,6 +85,10 @@ complete(){
   echo -e "${BLUE}08. 右键任务栏上的键盘图标${NC}"
   echo -e "${BLUE}09. 点击重新启动${NC}"
   echo -e "${BLUE}10. 重启电脑${NC}"
+  echo -e "\n${YELLOW}注意：目前最新的 Arch Linux 使用 wayland 时，可能需要手动进行以下操作\n${NC}"
+  echo -e "\n${YELLOW}01. 在 '系统设置 > 键盘 > 虚拟键盘' 中开启虚拟键盘 'fcitx5'\n${NC}"
+  echo -e "\n${YELLOW}02. 在 '/etc/profile' 中删除 'GTK_IM_MODULE' 与 'QT_IM_MODULE' 环境变量配置\n${NC}"
+  echo -e "\n${YELLOW}03. 注销并重新进入桌面\n${NC}"
 }
 
 main(){
