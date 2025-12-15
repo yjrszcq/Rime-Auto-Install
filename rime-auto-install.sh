@@ -23,7 +23,7 @@ up_to_date(){
 install_env(){
   echo "install_env" > "$PROGRESS_FILE"
   echo -e "\n${GREEN}开始：安装环境${NC}"
-  echo -e "\n" | sudo pacman -S yay fakeroot unzip
+  echo -e "\n" | sudo pacman -S yay fakeroot unzip plasma-x11-session
   echo -e "\n${GREEN}完成：安装环境${NC}"
 }
 
@@ -32,10 +32,11 @@ install_fcitx5(){
   echo -e "\n${GREEN}开始：安装 fcitx5${NC}"
   echo -e "\n" | sudo pacman -S fcitx5 fcitx5-qt fcitx5-gtk fcitx5-lua fcitx5-material-color fcitx5-chinese-addons
   {
-    grep -qF 'export XMODIFIERS="@im=fcitx5"' /etc/profile || echo 'export XMODIFIERS="@im=fcitx5"'
-    grep -qF 'export GTK_IM_MODULE="fcitx5"' /etc/profile || echo 'export GTK_IM_MODULE="fcitx5"'
-    grep -qF 'export QT_IM_MODULE="fcitx5"' /etc/profile || echo 'export QT_IM_MODULE="fcitx5"'
-  } | sudo tee -a /etc/profile > /dev/null
+    grep -qF 'GTK_IM_MODULE=fcitx' /etc/environment || echo 'GTK_IM_MODULE=fcitx'
+    grep -qF 'QT_IM_MODULE=fcitx' /etc/environment || echo 'QT_IM_MODULE=fcitx'
+    grep -qF 'XMODIFIERS=@im=fcitx' /etc/environment || echo 'XMODIFIERS=@im=fcitx'
+    grep -qF 'SDL_IM_MODULE=fcitx' /etc/environment || echo 'SDL_IM_MODULE=fcitx'
+  } | sudo tee -a /etc/environment > /dev/null
   echo -e "\n${GREEN}完成：安装 fcitx5${NC}"
 }
 
@@ -85,10 +86,13 @@ complete(){
   echo -e "${BLUE}08. 右键任务栏上的键盘图标${NC}"
   echo -e "${BLUE}09. 点击重新启动${NC}"
   echo -e "${BLUE}10. 重启电脑${NC}"
-  echo -e "\n${YELLOW}注意：目前最新的 Arch Linux 使用 wayland 时，可能需要继续进行以下操作\n${NC}"
+  echo -e "\n${YELLOW}注意：目前最新的 Arch Linux 使用 wayland 时，部分软件无法输入中文，推荐使用 X11\n${NC}"
+  echo -e "${BLUE}11. 在 重启电脑后的登录界面左下角，选择 'Plasma (X11)'${NC}"
+  echo -e "\n${YELLOW}注意：若仍要使用 wayland，可能需要继续进行以下操作\n${NC}"
   echo -e "${BLUE}11. 在 '系统设置 > 键盘 > 虚拟键盘' 中开启虚拟键盘 'fcitx5'${NC}"
   echo -e "${BLUE}12. 在 '/etc/profile' 中删除 'GTK_IM_MODULE' 与 'QT_IM_MODULE' 环境变量配置${NC}"
   echo -e "${BLUE}13. 注销并重新进入桌面${NC}"
+  
 }
 
 main(){
