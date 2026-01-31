@@ -65,34 +65,70 @@ install_oh_my_rime(){
   echo -e "\n${GREEN}完成：安装 oh my rime${NC}"
 }
 
+configure_fcitx5_rime(){
+  echo "configure_fcitx5_rime" > "$PROGRESS_FILE"
+  echo -e "\n${GREEN}开始：配置 fcitx5 使用 Rime${NC}"
+
+  mkdir -p ~/.config/fcitx5
+  local profile=~/.config/fcitx5/profile
+
+  # 备份原 profile
+  if [[ -f "$profile" ]]; then
+    local backup="${profile}.bak.$(date +%s)"
+    cp "$profile" "$backup"
+    echo -e "${BLUE}已备份原有 profile 为：${backup}${NC}"
+  fi
+
+  # 尝试获取当前键盘布局（获取失败就用 cn）
+  local layout="cn"
+  if command -v localectl >/dev/null 2>&1; then
+    layout=$(localectl status 2>/dev/null | awk -F: '/X11 Layout/ {gsub(/ /,"",$2); print $2}')
+    [[ -z "$layout" ]] && layout="cn"
+  fi
+
+  cat > "$profile" <<EOF
+[Groups/0]
+Name=Default
+Default Layout=${layout}
+DefaultIM=rime
+
+[Groups/0/Items/0]
+Name=rime
+Layout=
+
+[GroupOrder]
+0=Default
+EOF
+
+  echo -e "${BLUE}已自动写入 ~/.config/fcitx5/profile，默认输入法为 Rime${NC}"
+
+  echo -e "\n${GREEN}完成：配置 fcitx5 使用 Rime${NC}"
+}
+
 launch_fcitx5(){
-  echo "start_fcitx5" > "$PROGRESS_FILE"
-  echo -e "\n${GREEN}开始：启动 fcitx5${NC}"
+  echo "launch_fcitx5" > "$PROGRESS_FILE"
+  echo -e "\n${GREEN}开始：重启 fcitx5${NC}"
+  # 先杀掉已有进程（如果有）
+  if pgrep -x fcitx5 >/dev/null 2>&1; then
+    pkill -x fcitx5 || true
+    sleep 1
+  fi
   nohup /usr/bin/fcitx5 > /tmp/fcitx5-output.log 2>&1 &
-  echo -e "\n${GREEN}完成：启动 fcitx5${NC}"
+  echo -e "\n${GREEN}完成：重启 fcitx5${NC}"
 }
 
 complete(){
   touch ~/.local/share/fcitx5/rime/.auto-install-complete
   echo "complete" > "$PROGRESS_FILE"
-  echo -e "\n${YELLOW}安装完成！请手动进行以下操作，以完成 Rime 输入法的启用\n${NC}"
-  echo -e "${BLUE}01. 右键任务栏上的键盘图标${NC}"
-  echo -e "${BLUE}02. 点击配置${NC}"
-  echo -e "${BLUE}03. 叉掉所有输入法${NC}"
-  echo -e "${BLUE}04. 点击添加输入法${NC}"
-  echo -e "${BLUE}05. 选择中州韵${NC}"
-  echo -e "${BLUE}06. 点击添加${NC}"
-  echo -e "${BLUE}07. 点击应用${NC}"
-  echo -e "${BLUE}08. 右键任务栏上的键盘图标${NC}"
-  echo -e "${BLUE}09. 点击重新启动${NC}"
-  echo -e "${BLUE}10. 重启电脑${NC}"
+  echo -e "\n${YELLOW}==============================================${NC}"
+  echo -e "\n${GREEN}安装完成！请重启电脑，以完成 Rime 输入法的安装${NC}"
+  echo -e "\n${YELLOW}==============================================\n${NC}"
   echo -e "\n${YELLOW}注意：目前最新的 Arch Linux 使用 wayland 时，部分软件无法输入中文，推荐使用 X11\n${NC}"
-  echo -e "${BLUE}11. 在 重启电脑后的登录界面左下角，选择 'Plasma (X11)'${NC}"
+  echo -e "${BLUE}1. 在 重启电脑后的登录界面左下角，选择 'Plasma (X11)'${NC}"
   echo -e "\n${YELLOW}注意：若仍要使用 wayland，可能需要继续进行以下操作\n${NC}"
-  echo -e "${BLUE}11. 在 '系统设置 > 键盘 > 虚拟键盘' 中开启虚拟键盘 'fcitx5'${NC}"
-  echo -e "${BLUE}12. 在 '/etc/profile' 中删除 'GTK_IM_MODULE' 与 'QT_IM_MODULE' 环境变量配置${NC}"
-  echo -e "${BLUE}13. 注销并重新进入桌面${NC}"
-  
+  echo -e "${BLUE}1. 在 '系统设置 > 键盘 > 虚拟键盘' 中开启虚拟键盘 'fcitx5'${NC}"
+  echo -e "${BLUE}2. 在 '/etc/profile' 中删除 'GTK_IM_MODULE' 与 'QT_IM_MODULE' 环境变量配置${NC}"
+  echo -e "${BLUE}3. 注销并重新进入桌面${NC}"
 }
 
 main(){
@@ -125,6 +161,9 @@ main(){
     "install_oh_my_rime")
       install_oh_my_rime
       ;&
+    "configure_fcitx5_rime")
+      configure_fcitx5_rime
+      ;&
     "launch_fcitx5")
       launch_fcitx5
       ;&
@@ -139,6 +178,7 @@ main(){
       install_rime
       download_oh_my_rime
       install_oh_my_rime
+      configure_fcitx5_rime
       launch_fcitx5
       complete
       ;;
