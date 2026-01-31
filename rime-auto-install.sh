@@ -68,24 +68,18 @@ install_oh_my_rime(){
 configure_fcitx5_rime(){
   echo "configure_fcitx5_rime" > "$PROGRESS_FILE"
   echo -e "\n${GREEN}开始：配置 fcitx5 使用 Rime${NC}"
-
   mkdir -p ~/.config/fcitx5
   local profile=~/.config/fcitx5/profile
-
-  # 备份原 profile
   if [[ -f "$profile" ]]; then
     local backup="${profile}.bak.$(date +%s)"
     cp "$profile" "$backup"
     echo -e "${BLUE}已备份原有 profile 为：${backup}${NC}"
   fi
-
-  # 尝试获取当前键盘布局（获取失败就用 cn）
   local layout="cn"
   if command -v localectl >/dev/null 2>&1; then
     layout=$(localectl status 2>/dev/null | awk -F: '/X11 Layout/ {gsub(/ /,"",$2); print $2}')
     [[ -z "$layout" ]] && layout="cn"
   fi
-
   cat > "$profile" <<EOF
 [Groups/0]
 Name=Default
@@ -99,22 +93,19 @@ Layout=
 [GroupOrder]
 0=Default
 EOF
-
   echo -e "${BLUE}已自动写入 ~/.config/fcitx5/profile，默认输入法为 Rime${NC}"
-
   echo -e "\n${GREEN}完成：配置 fcitx5 使用 Rime${NC}"
 }
 
 launch_fcitx5(){
   echo "launch_fcitx5" > "$PROGRESS_FILE"
-  echo -e "\n${GREEN}开始：重启 fcitx5${NC}"
-  # 先杀掉已有进程（如果有）
+  echo -e "\n${GREEN}开始：启动 fcitx5${NC}"
   if pgrep -x fcitx5 >/dev/null 2>&1; then
     pkill -x fcitx5 || true
     sleep 1
   fi
   nohup /usr/bin/fcitx5 > /tmp/fcitx5-output.log 2>&1 &
-  echo -e "\n${GREEN}完成：重启 fcitx5${NC}"
+  echo -e "\n${GREEN}完成：启动 fcitx5${NC}"
 }
 
 complete(){
